@@ -6,12 +6,28 @@ import { Text } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Home from '../screens/Home';
-import Category from '../screens/Category';
+import MyProduct from '../screens/MyProduct';
 import Store from '../screens/Store';
 import Favorite from '../screens/Favorite';
 import ProfileBeforeLogin from '../screens/ProfileBeforeLogin';
+import Login from '../screens/Login';
+import Register from '../screens/Register';
+import { createStackNavigator } from '@react-navigation/stack';
 
 const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
+
+export default function StackNavigator () {
+    return (
+        <Stack.Navigator screenOptions={{
+            headerShown: false,
+        }}>
+            <Stack.Screen name='BottomNav' component={BottomNav}/>
+            <Stack.Screen name='Login' component={Login}/>
+            <Stack.Screen name='Register' component={Register}/>
+        </Stack.Navigator>
+    )
+}
 
 function CustomTabBar({ state, descriptors, navigation }) {
     const insets = useSafeAreaInsets();
@@ -101,9 +117,10 @@ function CustomTabBar({ state, descriptors, navigation }) {
     );
 }
 
-export default function BottomNav() {
+function BottomNav() {
     return (
         <SafeAreaProvider>
+
             <Tab.Navigator
                 tabBar={props => <CustomTabBar {...props} />}
                 screenOptions={{
@@ -120,21 +137,21 @@ export default function BottomNav() {
                     }}
                 />
                 <Tab.Screen
-                    name="Category"
-                    component={Category}
-                    options={{
-                        tabBarLabel: 'Category',
-                        focusedIcon: 'view-list',
-                        unfocusedIcon: 'view-list-outline',
-                    }}
-                />
-                <Tab.Screen
                     name="Store"
                     component={Store}
                     options={{
                         tabBarLabel: 'Store',
                         focusedIcon: 'store',
                         unfocusedIcon: 'store-outline',
+                    }}
+                />
+                <Tab.Screen
+                    name="MyProduct"
+                    component={MyProduct}
+                    options={{
+                        tabBarLabel: 'My Product',
+                        focusedIcon: 'package-variant',
+                        unfocusedIcon: 'package-variant-closed',
                     }}
                 />
                 <Tab.Screen

@@ -15,10 +15,10 @@ const Home = () => {
       <SafeAreaView>
         <View className='flex py-[8px] px-[14px]'>
           <View>
+            <SearchBar onSearch={handleSearch} />
+          <View>
             <Location/>
           </View>
-          <View>
-            <SearchBar onSearch={handleSearch} />
           </View>
           <View className='flex mt-[10px]'>
             <Text className='font-bold text-[20px]'>Search by Categories</Text>

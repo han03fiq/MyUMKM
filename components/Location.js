@@ -15,12 +15,12 @@ const Location = ({ kota, provinsi }) => {
 
     return (
         <View style={styles.container}>
-            <Icon name="map-marker-outline" size={28} color="#333" />
+            <Icon name="map-marker-outline" size={23} color="#333" />
             <View style={styles.locationText}>
                 <Text style={styles.kota}>kota, </Text>
                 <Text style={styles.provinsi}>provinsi</Text>
                 <TouchableOpacity onPress={toggleDropdown}>
-                    <Icon name={showDropdown ? "chevron-up" : "chevron-down"} size={24} color="#333" />
+                    <Icon name={showDropdown ? "chevron-up" : "chevron-down"} size={20} color="#333" />
                 </TouchableOpacity>
             </View>
             {showDropdown && (
@@ -52,12 +52,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     kota: {
-        fontSize: 18,
+        fontSize: 15,
         fontWeight: 'bold',
         color: '#333',
     },
     provinsi: {
-        fontSize: 18,
+        fontSize: 15,
         color: '#666',
         marginRight: 5,
     },
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     overlay: {
         position: 'absolute',
         backgroundColor: '#222',
-        zIndex: 2,
+        zIndex: 99,
         top: 50,
         left: 0,
         right: 0,

@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
-import Login from './Login';
 
 const ProfileBeforeLogin = () => {
   const navigation = useNavigation(); // Initialize navigation
@@ -22,10 +21,10 @@ const ProfileBeforeLogin = () => {
             Kamu belum Login, tekan tombol di bawah untuk Login!
           </Text>
           <TouchableOpacity 
-            style={styles.loginButton} 
+            className="bg-[#d9d9d9] rounded-[15px] py-3 px-9 items-center"
             onPress={handleLoginPress} // Use handleLoginPress function
           >
-            <Text style={styles.loginButtonText}>Login</Text>
+            <Text className="text-black text-lg">Login</Text>
           </TouchableOpacity>
         </View>
       </View>
