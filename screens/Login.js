@@ -32,32 +32,32 @@ const Login = ({ navigation }) => {
         <View>
             <Text className="text-[30px] font-bold text-center">Login</Text>
         </View>
-        <View className='h-screen items-center justify-center'>
-            <TextInput
+        <View className='items-center justify-center flex-1'>
+          <TextInput
             className="w-full border border-[#606060] bg-white rounded-[15px] px-4 py-5 mb-4"
             placeholder="Masukkan email"
             value={email}
             onChangeText={setEmail}
-            />
-            <TextInput
+          />
+          <TextInput
             className="w-full border border-[#606060] bg-white rounded-[15px] px-4 py-5 mb-4"
             placeholder="Masukkan password"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
-            />
-            <TouchableOpacity
-                className="bg-[#d9d9d9] rounded-[15px] py-3 px-9 items-center"
-                onPress={handleLogin}
-            >
-                <Text className="text-black text-lg">Login</Text>
+          />
+          <TouchableOpacity
+            className="bg-[#d9d9d9] rounded-[15px] py-3 px-9 items-center"
+            onPress={handleLogin}
+          >
+            <Text className="text-black text-lg">Login</Text>
+          </TouchableOpacity>
+          <View className="mt-4 flex-row">
+            <Text>Belum memiliki akun? klik </Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+              <Text className="text-blue-600 underline">di sini</Text>
             </TouchableOpacity>
-            <View className="mt-4 flex-row">
-                <Text>Belum memiliki akun? klik </Text>
-                <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-                    <Text className="text-blue-600 underline">di sini</Text>
-                </TouchableOpacity>
-            </View>
+          </View>
         </View>
       </View>
     </SafeAreaView>

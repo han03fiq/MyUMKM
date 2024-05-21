@@ -11,12 +11,12 @@ const ProfileBeforeLogin = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.headerText}>Profile</Text>
+    <SafeAreaView className="flex justify-center items-center px-[9px]">
+      <View className="h-full w-full">
+        <View>
+            <Text className="text-[30px] font-bold text-center">Profile</Text>
         </View>
-        <View style={styles.content}>
+        <View className='px-[9px] items-center justify-center flex-1'>
           <Text style={styles.contentText}>
             Kamu belum Login, tekan tombol di bawah untuk Login!
           </Text>
@@ -55,7 +55,8 @@ const styles = StyleSheet.create({
     marginTop: 5,
     alignItems: 'center',
     justifyContent: 'center',
-    marginHorizontal: 10,
+    marginHorizontal: '9px',
+    backgroundColor: 'red',
   },
   contentText: {
     fontSize: 20,
@@ -64,9 +65,9 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     backgroundColor: '#d9d9d9',
-    borderRadius: 15,
-    paddingVertical: 15,
-    paddingHorizontal: 30,
+    borderRadius: '15px',
+    paddingVertical: '15px',
+    paddingHorizontal: '30px',
   },
   loginButtonText: {
     fontSize: 16,

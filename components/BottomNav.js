@@ -120,7 +120,6 @@ function CustomTabBar({ state, descriptors, navigation }) {
 function BottomNav() {
     return (
         <SafeAreaProvider>
-
             <Tab.Navigator
                 tabBar={props => <CustomTabBar {...props} />}
                 screenOptions={{

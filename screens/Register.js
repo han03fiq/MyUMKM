@@ -21,7 +21,7 @@ const Register = ({ navigation }) => {
         <View>
             <Text className="text-[30px] font-bold text-center">Register</Text>
         </View>
-        <View className='h-screen items-center justify-center'>
+        <View className='items-center justify-center flex-1'>
           <TextInput
             className="w-full border border-[#606060] bg-white rounded-[15px] px-4 py-5 mb-4"
             placeholder="Masukkan email"
