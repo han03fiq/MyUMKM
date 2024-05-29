@@ -10,6 +10,7 @@ const images = [
 const ProductPage = ({ navigation }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
 
   const handleGetDirections = () => {
     const url = 'https://maps.app.goo.gl/S13NzbCkjDMRE77Q9';
@@ -50,6 +51,10 @@ const ProductPage = ({ navigation }) => {
     }
   };
 
+  const toggleBookmark = () => {
+    setIsBookmarked(!isBookmarked);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -60,8 +65,12 @@ const ProductPage = ({ navigation }) => {
           <TouchableOpacity style={styles.headerIcon} onPress={handleShare}>
             <Feather name="share-2" size={24} color="black" />
           </TouchableOpacity>
-          <TouchableOpacity>
-            <Feather name="bookmark" size={24} color="black" />
+          <TouchableOpacity onPress={toggleBookmark}>
+            <MaterialCommunityIcons
+              name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
+              size={24}
+              color="black"
+            />
           </TouchableOpacity>
         </View>
       </View>
