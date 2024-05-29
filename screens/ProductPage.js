@@ -1,19 +1,13 @@
 import React, { useState } from 'react';
-import { View, Image, Text, StyleSheet, TouchableOpacity, ScrollView, Linking } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Linking, Share } from 'react-native';
 import { MaterialCommunityIcons, Entypo, Feather } from '@expo/vector-icons';
 
-// Import local images
-import icon from '../assets/icon.png';
-import madBagel from '../assets/mad-bagel.jpg';
-
-// Add images to the array
 const images = [
-  { uri: 'https://i.imgur.com/t3zQh5n.jpg' },
-  icon,
-  madBagel
+  { id: 1 },
+  { id: 2 }
 ];
 
-const ProductPage = () => {
+const ProductPage = ({ navigation }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -36,14 +30,34 @@ const ProductPage = () => {
     setIsExpanded(!isExpanded);
   };
 
+  const handleShare = async () => {
+    try {
+      const result = await Share.share({
+        message: 'Check out this awesome product: Kratos Aztec Tan Boots - Rp 990.000. Handcrafted in Bandung, West Java, Indonesia.',
+      });
+
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+        } else {
+          // shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Entypo name="chevron-left" size={24} color="black" />
         </TouchableOpacity>
         <View style={styles.headerIcons}>
-          <TouchableOpacity style={styles.headerIcon}>
+          <TouchableOpacity style={styles.headerIcon} onPress={handleShare}>
             <Feather name="share-2" size={24} color="black" />
           </TouchableOpacity>
           <TouchableOpacity>
@@ -53,7 +67,7 @@ const ProductPage = () => {
       </View>
       <ScrollView style={styles.content}>
         <View style={styles.carouselContainer}>
-          <Image source={images[currentIndex]} style={styles.image} />
+          <View style={styles.grayBox} />
         </View>
         <View style={styles.navigationContainer}>
           <TouchableOpacity style={styles.arrowButton} onPress={goToPreviousImage}>
@@ -76,68 +90,24 @@ const ProductPage = () => {
           </TouchableOpacity>
         </View>
         <View style={styles.info}>
-          <Text style={styles.title}>Kratos Aztec Tan Boots</Text>
-          <Text style={styles.price}>Rp 990.000</Text>
+          <Text style={styles.title}>Product Name</Text>
+          <Text style={styles.price}>Product Price</Text>
           <Text style={styles.description}>
             {isExpanded
-              ? `Ready stock product, ready to ship in one to two business days;
-100% made from cowhide Crazy Horse leather;
-Easy size-exchange guarantee (T&C applied);
-Recraftable, greater in age, flexible & long-lasting;
-Excellent after-sale service (maintenance, recrafting & refinishing);
-Handcrafted in Bandung, West Java, Indonesia.
-
-PRODUCT SPECIFICATION
-
-UPPER
-Upper: 1,6mm Chrome-tanned Crazy Horse leather
-Lining: 1mm Breathable double mesh
-Eyelet: Nickel rings
-Laces: 1500mm waxed cotton
-
-BOTTOM
-Construction: 360° hand-sewn stitchdown
-Shank: 140 x 20mm steel
-Midsole: 150mm elastic fiber
-Outsole: 200mm Rubber lug sole
-Insole: 2mm chemical sheet
-Toe Puff: 1.5mm chemical sheet
-
-ADDITIONAL INFORMATION
-Handlasted & machine pressed
-
-PACKAGING
-Packaging: Corrugated box, dust bag & tote bag
-
-SIZE CHART
-
-EUR - INSOLE (centimeter)
-
-38 - 25
-39 - 25.5
-40 - 26
-41 - 26.5
-42 - 27.5
-43 - 28
-44 - 28.5
-45 - 29
-46 - 30
-47 - 30.5
-48 - 31`
-              : `Ready stock product, ready to ship in one to two business days; 100% made from cowhide Crazy Horse leather; Easy size-exchange guarantee (T&C applied); Recraftable, greater in age, flexible & long-lasting; Excellent after-sale service (maintenance, recrafting & refinishing)...
-`}
+              ? `Long Description`
+              : `Short Description`}
           </Text>
           <TouchableOpacity onPress={toggleExpand}>
             <Text style={[styles.readMore, isExpanded && styles.readLess]}>{isExpanded ? 'Read Less' : 'Read More...'}</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.footer}>
-          <Image source={{ uri: 'https://i.imgur.com/t3zQh5n.jpg' }} style={styles.footerImage} />
+          <View style={styles.footerGrayBox} />
           <View style={styles.footerTextContainer}>
-            <Text style={styles.footerTitle}>Koku Footwear</Text>
+            <Text style={styles.footerTitle}>Store Name</Text>
             <View style={styles.locationContainer}>
               <MaterialCommunityIcons name="map-marker" size={16} color="gray" />
-              <Text style={styles.footerLocation}>Cibaduyut</Text>
+              <Text style={styles.footerLocation}>Store Location</Text>
             </View>
             <TouchableOpacity onPress={handleGetDirections}>
               <Text style={styles.directions}>Get Directions</Text>
@@ -181,6 +151,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     position: 'relative',
   },
+  grayBox: {
+    width: '100%',
+    height: 300,
+    backgroundColor: '#ccc',
+  },
   navigationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -189,11 +164,6 @@ const styles = StyleSheet.create({
   },
   arrowButton: {
     paddingHorizontal: 10,
-  },
-  image: {
-    width: '100%',
-    height: 300,
-    resizeMode: 'contain',
   },
   dotsContainer: {
     flexDirection: 'row',
@@ -253,9 +223,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
   },
-  footerImage: {
+  footerGrayBox: {
     width: 50,
     height: 50,
+    backgroundColor: '#ccc',
     marginRight: 10,
   },
   footerTextContainer: {
