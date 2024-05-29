@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Keyboard, Platform } from 'react-native';
 import { CommonActions } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -6,16 +6,22 @@ import { Text } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Home from '../screens/Home';
-import MyProduct from '../screens/MyProduct';
+import StackProductNavigator from './StackProduct';
 import Store from '../screens/Store';
 import Favorite from '../screens/Favorite';
 import ProfileBeforeLogin from '../screens/ProfileBeforeLogin';
+import ProfileAfterLogin from '../screens/ProfileAfterLogin';
 import Login from '../screens/Login';
 import Register from '../screens/Register';
 import { createStackNavigator } from '@react-navigation/stack';
+import { AuthContext } from '../utils/AuthContext';
+import StackHomeNavigator from './StackHome';
+import StackStoreNavigator from './StackStore';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+const StackProduk = createStackNavigator();
+
 
 export default function StackNavigator () {
     return (
@@ -118,6 +124,8 @@ function CustomTabBar({ state, descriptors, navigation }) {
 }
 
 function BottomNav() {
+    const { isLoggedIn } = useContext(AuthContext)
+
     return (
         <SafeAreaProvider>
             <Tab.Navigator
@@ -128,7 +136,7 @@ function BottomNav() {
             >
                 <Tab.Screen
                     name="Home"
-                    component={Home}
+                    component={StackHomeNavigator}
                     options={{
                         tabBarLabel: 'Home',
                         focusedIcon: 'home',
@@ -137,7 +145,7 @@ function BottomNav() {
                 />
                 <Tab.Screen
                     name="Store"
-                    component={Store}
+                    component={StackStoreNavigator}
                     options={{
                         tabBarLabel: 'Store',
                         focusedIcon: 'store',
@@ -146,7 +154,7 @@ function BottomNav() {
                 />
                 <Tab.Screen
                     name="MyProduct"
-                    component={MyProduct}
+                    component={StackProductNavigator}
                     options={{
                         tabBarLabel: 'My Product',
                         focusedIcon: 'package-variant',
@@ -164,7 +172,7 @@ function BottomNav() {
                 />
                 <Tab.Screen
                     name="Profile"
-                    component={ProfileBeforeLogin}
+                    component={isLoggedIn ? ProfileAfterLogin : ProfileBeforeLogin}
                     options={{
                         tabBarLabel: 'Profile',
                         focusedIcon: 'account',

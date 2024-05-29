@@ -76,25 +76,27 @@ const Home = ({ navigation }) => {
               </View>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
                 {stores.map((store) => (
-                  <View key={store.id} style={{ marginVertical: 7, alignItems: 'center' }}>
-                    <Image
-                      source={{ uri: store.image }}
-                      style={{ width: 80, height: 80, borderRadius: 40 }}
-                    />
-                  </View>
+                  <TouchableOpacity onPress={() => navigation.navigate('StoreUnit')} >
+                    <View key={store.id} style={{ marginVertical: 7, alignItems: 'center' }}>
+                      <Image
+                        source={{ uri: store.image }}
+                        style={{ width: 80, height: 80, borderRadius: 40 }}
+                      />
+                    </View>
+                  </TouchableOpacity>
                 ))}
               </View>
             </View>
-            <View style={{ marginBottom: 10 }}>
+            <View>
               <Text style={{ fontWeight: 'bold', fontSize: 20, paddingVertical: 10 }}>Recommended for you</Text>
               <ScrollView horizontal>
                 <View style={{ flexDirection: 'row' }}>
                   {products.map((product) => (
-                    <TouchableOpacity key={product.id} style={{ margin: 5 }}>
+                    <TouchableOpacity key={product.id} style={{ margin: 5 }} onPress={() => navigation.navigate('Product')} >
                       <Image source={{ uri: product.image }} style={{ width: 100, height: 100, borderRadius: 10 }} />
-                      <Text style={{ textAlign: 'center' }}>{product.name}</Text>
-                      <Text style={{ textAlign: 'center' }}>{product.price}</Text>
-                      <Text style={{ textAlign: 'center' }}>{product.location}</Text>
+                      <Text>{product.name}</Text>
+                      <Text>{product.price}</Text>
+                      <Text>{product.location}</Text>
                     </TouchableOpacity>
                   ))}
                 </View>

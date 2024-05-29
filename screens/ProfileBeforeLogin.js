@@ -21,10 +21,10 @@ const ProfileBeforeLogin = () => {
             Kamu belum Login, tekan tombol di bawah untuk Login!
           </Text>
           <TouchableOpacity 
-            className="bg-[#d9d9d9] rounded-[15px] py-3 px-9 items-center"
+            className="bg-[#222] rounded-[15px] py-3 px-9 items-center"
             onPress={handleLoginPress} // Use handleLoginPress function
           >
-            <Text className="text-black text-lg">Login</Text>
+            <Text className="text-white text-lg">Login</Text>
           </TouchableOpacity>
         </View>
       </View>

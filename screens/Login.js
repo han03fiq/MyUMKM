@@ -1,38 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { createStackNavigator } from '@react-navigation/stack';
-import { NavigationContainer } from '@react-navigation/native';
-import Register from './Register';
-import ProfileAfterLogin from './ProfileAfterLogin';
+import { AuthContext } from '../utils/AuthContext';
+import { signInWithEmail } from '../utils/api';
 
-const Stack = createStackNavigator();
-
-const handleClearSearch = () => {
-  setSearchQuery('');
-  Keyboard.dismiss();
-  console.log('Search canceled and keyboard dismissed');
+const isEmailValid = (email) => {
+  const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return regex.test(email);
 };
 
 const Login = ({ navigation }) => {
+  const { login } = useContext(AuthContext); // Menggunakan useContext untuk mengakses login dari AuthContext
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    console.log('Login button pressed');
-    // Implement login logic here
-    
-    // After successful login logic, navigate to the ProfileAfterLogin page
-    navigation.navigate('ProfileAfterLogin');
+  const handleLogin = async () => {
+    try {
+      console.log('Login button pressed');
+      // Panggil fungsi signInWithEmail untuk login
+      await signInWithEmail(email, password);
+      
+      // Setelah berhasil login, panggil fungsi login dari AuthContext
+      login();
+
+      // Setelah login berhasil, navigasikan ke halaman ProfileAfterLogin
+      navigation.navigate('Profile');
+    } catch (error) {
+      console.error('Error during login:', error.message);
+      Alert.alert('Login Failed', error.message);
+    }
   };
 
+  const isButtonDisabled = !isEmailValid(email) || password.length < 6;
+
   return (
-    <SafeAreaView className="flex justify-center items-center px-[9px]">
-      <View className="h-full w-full">
+    <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 9 }}>
+      <View style={{ height: '100%', width: '100%' }}>
         <View>
-            <Text className="text-[30px] font-bold text-center">Login</Text>
+          <Text style={{ fontSize: 30, fontWeight: 'bold', textAlign: 'center' }}>Login</Text>
         </View>
-        <View className='items-center justify-center flex-1'>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <TextInput
             className="w-full border border-[#606060] bg-white rounded-[15px] px-4 py-5 mb-4"
             placeholder="Masukkan email"
@@ -47,15 +54,16 @@ const Login = ({ navigation }) => {
             secureTextEntry
           />
           <TouchableOpacity
-            className="bg-[#d9d9d9] rounded-[15px] py-3 px-9 items-center"
+            className="bg-[#222] rounded-[15px] py-3 px-9 items-center"
             onPress={handleLogin}
+            style={{ opacity: isButtonDisabled ? 0.4 : 1 }}
           >
-            <Text className="text-black text-lg">Login</Text>
+            <Text style={{ color: 'white', fontSize: 18 }}>Login</Text>
           </TouchableOpacity>
-          <View className="mt-4 flex-row">
+          <View style={{ marginTop: 16, flexDirection: 'row' }}>
             <Text>Belum memiliki akun? klik </Text>
             <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-              <Text className="text-blue-600 underline">di sini</Text>
+              <Text style={{ color: '#0000ff', textDecorationLine: 'underline' }}>di sini</Text>
             </TouchableOpacity>
           </View>
         </View>
