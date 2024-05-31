@@ -1,24 +1,18 @@
 import React from 'react';
-import { SafeAreaView, View, Text, ScrollView, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
+import { SafeAreaView, View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-// Import local images
-import icon from '../assets/icon.png';
-import madBagel from '../assets/mad-bagel.jpg';
-
-// Add images to the array
+// Define the items with placeholder text instead of images
 const items = [
   {
     id: 1,
-    title: 'Kratos Aztec Tan Boots',
-    location: 'Koku Footwear, Kab. Bandung',
-    image: icon,
+    title: 'Product 1',
+    location: 'Location 1',
   },
   {
     id: 2,
-    title: 'Nutella Bagel Sandwich',
-    location: 'Mad Bagel, Kota Bandung',
-    image: madBagel,
+    title: 'Product 2',
+    location: 'Location 2',
   }
 ];
 
@@ -32,15 +26,18 @@ const Favorite = () => {
         <ScrollView style={styles.content}>
           {items.map(item => (
             <TouchableOpacity key={item.id} style={styles.card}>
-              <ImageBackground source={item.image} style={styles.cardImage} imageStyle={styles.cardImageStyle}>
-                <View style={styles.cardContent}>
-                  <Text style={styles.cardTitle}>{item.title}</Text>
-                  <View style={styles.cardLocation}>
-                    <MaterialCommunityIcons name="map-marker" size={16} color="white" />
-                    <Text style={styles.cardLocationText}>{item.location}</Text>
-                  </View>
+              <View style={styles.cardImage}>
+                <View style={styles.placeholder}>
+                  <Text style={styles.placeholderText}>{item.title}</Text>
                 </View>
-              </ImageBackground>
+              </View>
+              <View style={styles.cardContent}>
+                <Text style={styles.cardTitle}>{item.title}</Text>
+                <View style={styles.cardLocation}>
+                  <MaterialCommunityIcons name="map-marker" size={16} color="white" />
+                  <Text style={styles.cardLocationText}>{item.location}</Text>
+                </View>
+              </View>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -72,11 +69,19 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   cardImage: {
-    height: 200,
-    justifyContent: 'flex-end',
+    height: 150, // Adjusted height
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ccc', // Gray background for placeholder
   },
-  cardImageStyle: {
-    borderRadius: 10,
+  placeholder: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  placeholderText: {
+    color: 'black',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   cardContent: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
