@@ -1,19 +1,19 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import Home from '../screens/Home';
-import Product from '../screens/Product'; // Mengimpor Product.js
+import ProductPage from '../screens/ProductPage'; // Mengimpor Product.js
 import StoreUnit from '../screens/StoreUnit';
 
 
-const StackProduct = createStackNavigator();
+const StackHome = createStackNavigator();
 
 const StackHomeNavigator = () => {
   return (
-    <StackProduct.Navigator screenOptions={{ headerShown: false }}>
-      <StackProduct.Screen name="Home" component={Home} />
-      <StackProduct.Screen name="StoreUnit" component={StoreUnit} />
-      <StackProduct.Screen name="Product" component={Product} />
-    </StackProduct.Navigator>
+    <StackHome.Navigator screenOptions={{ headerShown: false }}>
+      <StackHome.Screen name="Home" component={Home} />
+      <StackHome.Screen name="StoreUnit" component={StoreUnit} />
+      <StackHome.Screen name="ProductPage" component={ProductPage} />
+    </StackHome.Navigator>
   );
 };
 

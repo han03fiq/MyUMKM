@@ -6,7 +6,7 @@ import { Text } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Home from '../screens/Home';
-import StackProductNavigator from './StackProduct';
+import StackMyProductPageNavigator from './StackMyProductPage';
 import Store from '../screens/Store';
 import Favorite from '../screens/Favorite';
 import ProfileBeforeLogin from '../screens/ProfileBeforeLogin';
@@ -17,6 +17,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { AuthContext } from '../utils/AuthContext';
 import StackHomeNavigator from './StackHome';
 import StackStoreNavigator from './StackStore';
+import StackFavoriteNavigator from './StackFavorite';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -154,7 +155,7 @@ function BottomNav() {
                 />
                 <Tab.Screen
                     name="MyProduct"
-                    component={StackProductNavigator}
+                    component={StackMyProductPageNavigator}
                     options={{
                         tabBarLabel: 'My Product',
                         focusedIcon: 'package-variant',
@@ -163,7 +164,7 @@ function BottomNav() {
                 />
                 <Tab.Screen
                     name="Favorite"
-                    component={Favorite}
+                    component={StackFavoriteNavigator}
                     options={{
                         tabBarLabel: 'Favorite',
                         focusedIcon: 'heart',

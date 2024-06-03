@@ -11,7 +11,7 @@ const ProfileBeforeLogin = () => {
   };
 
   return (
-    <SafeAreaView className="flex justify-center items-center px-[9px]">
+    <SafeAreaView className="flex justify-center items-center px-[9px]" edges={['top', 'left', 'right']}>
       <View className="h-full w-full">
         <View>
             <Text className="text-[30px] font-bold text-center">Profile</Text>
@@ -33,46 +33,10 @@ const ProfileBeforeLogin = () => {
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    marginVertical: 8,
-    marginHorizontal: 14,
-  },
-  header: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 10,
-  },
-  headerText: {
-    fontSize: 30,
-    fontWeight: 'bold',
-  },
-  content: {
-    flex: 1,
-    marginTop: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: '9px',
-    backgroundColor: 'red',
-  },
   contentText: {
     fontSize: 20,
     textAlign: 'center',
     marginBottom: 20,
-  },
-  loginButton: {
-    backgroundColor: '#d9d9d9',
-    borderRadius: '15px',
-    paddingVertical: '15px',
-    paddingHorizontal: '30px',
-  },
-  loginButtonText: {
-    fontSize: 16,
-    color: '#000',
-    textAlign: 'center',
   },
 });
 

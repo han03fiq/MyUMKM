@@ -1,33 +1,82 @@
-import React, { useContext } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState, useContext } from 'react';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { supabase } from '../utils/supabase';
 import { AuthContext } from '../utils/AuthContext';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-const Profile = () => {
-  const { logout } = useContext(AuthContext); // Menggunakan useContext untuk mengakses logout dari AuthContext
+const ProfileScreen = ({ navigation }) => {
+  const [username, setUsername] = useState('');
+  const { session, signOut } = useContext(AuthContext); // Import signOut from AuthContext
 
-  const handleLogout = () => {
-    // Panggil fungsi logout dari AuthContext
-    logout();
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('Account')
+          .select('username')
+          .eq('id', session.user.id)
+          .single();
+
+        if (error) {
+          console.error('Error fetching user profile:', error.message);
+          Alert.alert('Error', 'Failed to fetch user profile.');
+        } else {
+          setUsername(data.username);
+        }
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+        Alert.alert('Error', 'Failed to fetch user profile.');
+      }
+    };
+
+    if (session && session.user && session.user.id) {
+      fetchUserProfile();
+    } else {
+      console.log('Session or user ID is not available');
+    }
+  }, [session]);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(); // Call the signOut function from AuthContext
+      // Navigate to login screen or do any other necessary actions after logout
+    } catch (error) {
+      console.error('Error during logout:', error.message);
+      Alert.alert('Logout Failed', error.message);
+    }
+  };
+
+  const handleAddStore = () => {
+    // Navigating to the screen where you can add a new store
+    navigation.navigate('AddStore');
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 9 }}>
-      <View style={{ height: '100%', width: '100%' }}>
+    <SafeAreaView className="flex justify-center items-center px-[9px]">
+      <View className="h-full w-full items-center">
         <View>
-          <Text style={{ fontSize: 30, fontWeight: 'bold', textAlign: 'center' }}>Profile</Text>
+          <Text className="text-[30px] font-bold text-center">Profile</Text>
         </View>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <TouchableOpacity
-            className="bg-[#d9d9d9] rounded-[15px] py-3 px-9 items-center"
-            onPress={handleLogout}
-          >
-            <Text style={{ color: 'black', fontSize: 18 }}>Log Out</Text>
-          </TouchableOpacity>
+        <View className="mt-5 mb-2">
+          <MaterialCommunityIcons name="account" size={100} color="#ccc" />
         </View>
+        <Text className="text-lg font-bold">{username}</Text>
+        <TouchableOpacity
+          className="bg-[#222] rounded-[15px] py-3 px-9 items-center mt-4"
+          onPress={handleAddStore}
+        >
+          <Text style={{ color: 'white', fontSize: 18 }}>Tambah Store</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          className="bg-[#222] rounded-[15px] py-3 px-9 items-center mt-96"
+          onPress={handleLogout}
+        >
+          <Text style={{ color: 'white', fontSize: 18 }}>Logout</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 };
 
-export default Profile;
+export default ProfileScreen;

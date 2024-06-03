@@ -28,3 +28,14 @@ export async function signOut() {
   const { error } = await supabase.auth.signOut();
   if (error) throw error;
 }
+
+export async function fetchUser(session) {
+  const { data: user, error } = await supabase
+    .from('Account')
+    .select('username')
+    .eq('id', session.user.id)
+    .single();
+  if (error) throw error;
+
+  return user;
+}

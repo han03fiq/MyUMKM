@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Location from '../components/Location';
 
 const Store = ({ navigation }) => {
   const stores = [
@@ -18,15 +17,14 @@ const Store = ({ navigation }) => {
       <View style={styles.innerContainer}>
         <View>
           <Text style={styles.title}>Store</Text>
-          
         </View>
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator='false' className='mt-6'>
         <View>
           <View style={styles.header}>
             <Text style={[styles.subtitle, {textAlign: 'left'}]}>Fashion</Text>
             <View style={styles.line} />
           </View>
-          <ScrollView horizontal>
+          <ScrollView horizontal showsHorizontalScrollIndicator='false'>
             <View style={{ flexDirection: 'row' }}>
               {stores.map((store) => (
                 <TouchableOpacity key={store.id} style={styles.storeContainer} onPress={() => navigation.navigate('StoreUnit')}>
@@ -43,7 +41,7 @@ const Store = ({ navigation }) => {
             <Text style={[styles.subtitle, {textAlign: 'left'}]}>Home and Kitchen</Text>
             <View style={styles.line} />
           </View>
-          <ScrollView horizontal>
+          <ScrollView horizontal showsHorizontalScrollIndicator='false'>
             <View style={{ flexDirection: 'row' }}>
               {stores.map((store) => (
                 <TouchableOpacity key={store.id} style={styles.storeContainer} onPress={() => navigation.navigate('StoreUnit')}>
@@ -60,7 +58,7 @@ const Store = ({ navigation }) => {
             <Text style={[styles.subtitle, {textAlign: 'left'}]}>Handicraft</Text>
             <View style={styles.line} />
           </View>
-          <ScrollView horizontal>
+          <ScrollView horizontal showsHorizontalScrollIndicator='false'>
             <View style={{ flexDirection: 'row' }}>
               {stores.map((store) => (
                 <TouchableOpacity key={store.id} style={styles.storeContainer} onPress={() => navigation.navigate('StoreUnit')}>
@@ -77,7 +75,7 @@ const Store = ({ navigation }) => {
             <Text style={[styles.subtitle, {textAlign: 'left'}]}>Gadget</Text>
             <View style={styles.line} />
           </View>
-          <ScrollView horizontal>
+          <ScrollView horizontal showsHorizontalScrollIndicator='false'>
             <View style={{ flexDirection: 'row' }}>
               {stores.map((store) => (
                 <TouchableOpacity key={store.id} style={styles.storeContainer} onPress={() => navigation.navigate('StoreUnit')}>
@@ -94,7 +92,7 @@ const Store = ({ navigation }) => {
             <Text style={[styles.subtitle, {textAlign: 'left'}]}>Food & Beverages</Text>
             <View style={styles.line} />
           </View>
-          <ScrollView horizontal>
+          <ScrollView horizontal showsHorizontalScrollIndicator='false'>
             <View style={{ flexDirection: 'row' }}>
               {stores.map((store) => (
                 <TouchableOpacity key={store.id} style={styles.storeContainer} onPress={() => navigation.navigate('StoreUnit')}>
@@ -111,7 +109,7 @@ const Store = ({ navigation }) => {
             <Text style={[styles.subtitle, {textAlign: 'left'}]}>Beauty</Text>
             <View style={styles.line} />
           </View>
-          <ScrollView horizontal>
+          <ScrollView horizontal showsHorizontalScrollIndicator='false'>
             <View style={{ flexDirection: 'row' }}>
               {stores.map((store) => (
                 <TouchableOpacity key={store.id} style={styles.storeContainer} onPress={() => navigation.navigate('StoreUnit')}>
