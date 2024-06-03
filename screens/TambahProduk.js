@@ -3,13 +3,16 @@ import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../utils/supabase'; // Import Supabase connection
 import { AuthContext } from '../utils/AuthContext';
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
 
 const TambahProduk = () => {
   const [productName, setProductName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState('');
+  const [image, setImage] = useState(''); // State untuk menyimpan URL gambar
   const { session } = useContext(AuthContext); // Get session from AuthContext
+  const navigation = useNavigation(); // Initialize navigation
 
   const getCategoryID = (categoryName) => {
     switch (categoryName) {
@@ -38,13 +41,30 @@ const TambahProduk = () => {
         throw new Error('Invalid category');
       }
 
+      // Dapatkan id_store dari id_akun sesi saat ini
+      const { data: storeData, error: storeError } = await supabase
+        .from('Store')
+        .select('id')
+        .eq('id_akun', session.user.id);
+
+      if (storeError) {
+        throw storeError;
+      }
+
+      const idStore = storeData[0]?.id;
+
+      if (!idStore) {
+        throw new Error('Store not found for the current user');
+      }
+
       const { data, error } = await supabase.from('Product').insert([
         {
           name_product: productName,
           description: description,
           price: price,
-          id_akun: session.user.id, // Set id_akun to the user's ID from the session
+          id_store: idStore, // Gunakan id_store dari sesi saat ini
           id_kategori: categoryID, // Set id_kategori based on the category input
+          gambar_product: image || null, // Simpan URL gambar dalam database atau null jika kosong
         },
       ]);
 
@@ -58,6 +78,8 @@ const TambahProduk = () => {
       setDescription('');
       setPrice('');
       setCategory('');
+      setImage('');
+      navigation.navigate('MyProduct'); // Navigate to MyProduct page after save
     } catch (error) {
       console.error('Error saving product:', error.message);
       Alert.alert('Error', 'Failed to save product.');
@@ -71,29 +93,29 @@ const TambahProduk = () => {
           <Text className="text-[30px] font-bold text-center">Tambah Produk</Text>
         </View>
         <View className="mt-6 ">
-          <Text className="text-xl font-bold mb-1">Basic Information</Text>
-          <View className="mb-3">
+          <Text className="text-xl font-bold mb-2">Basic Information</Text>
+          <View>
             <TextInput
               value={productName}
               onChangeText={setProductName}
-              className="border border-gray-300 p-2 rounded-md"
-              placeholder="Product Name"
+              className="w-full border border-[#606060] bg-white rounded-[15px] px-3 py-4 mb-2"
+              placeholder="Masukkan nama produk"
             />
           </View>
-          <View className="mb-3">
+          <View>
             <TextInput
               value={description}
               onChangeText={setDescription}
-              className="border border-gray-300 p-2 rounded-md"
-              placeholder="Description"
+              className="w-full border border-[#606060] bg-white rounded-[15px] px-3 py-4 mb-2"
+              placeholder="Masukkan deskripsi produk"
             />
           </View>
-          <View className="mb-3">
+          <View>
             <TextInput
               value={price}
               onChangeText={setPrice}
-              className="border border-gray-300 p-2 rounded-md"
-              placeholder="Price"
+              className="w-full border border-[#606060] bg-white rounded-[15px] px-3 py-4 mb-2"
+              placeholder="Masukkan harga produk"
               keyboardType="numeric"
             />
           </View>
@@ -101,26 +123,27 @@ const TambahProduk = () => {
             <TextInput
               value={category}
               onChangeText={setCategory}
-              className="border border-gray-300 p-2 rounded-md"
-              placeholder="Category"
+              className="w-full border border-[#606060] bg-white rounded-[15px] px-3 py-4 mb-2"
+              placeholder="Masukkan kategori produk"
             />
           </View>
         </View>
         <View className="mb-4">
-          <Text className="text-xl font-bold mb-1">Product Image</Text>
+          <Text className="text-xl font-bold mb-2">Product Image</Text>
           <View className="flex flex-row">
-            <View className="w-24 h-24 bg-gray-200 border border-gray-300 mr-2 rounded-md"></View>
-            <View className="w-24 h-24 bg-gray-200 border border-gray-300 mr-2 rounded-md"></View>
-            <TouchableOpacity className="w-24 h-24 bg-gray-200 border border-gray-300 rounded-md flex items-center justify-center">
-              <Text className="text-gray-500">Add Image</Text>
-            </TouchableOpacity>
+            <TextInput
+              value={image}
+              onChangeText={setImage}
+              className="w-full border border-[#606060] bg-white rounded-[15px] px-3 py-4 mb-2"
+              placeholder="Masukkan foto produk dalam URL" // Ganti placeholder menjadi "Image URL"
+            />
           </View>
         </View>
-        <View className="flex flex-row justify-between">
-          <TouchableOpacity onPress={saveProduct} className="flex-1 mr-2 p-3 bg-black rounded-md">
+        <View className="flex flex-row justify-between bottom-[20px] absolute">
+          <TouchableOpacity onPress={saveProduct} className="flex-1 mr-2 p-3 bg-black rounded-[15px]">
             <Text className="text-white text-center">Save</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="flex-1 ml-2 p-3 bg-gray-300 rounded-md">
+          <TouchableOpacity onPress={() => navigation.goBack()} className="flex-1 ml-2 p-3 bg-gray-300 rounded-[15px]">
             <Text className="text-black text-center">Cancel</Text>
           </TouchableOpacity>
         </View>

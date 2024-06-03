@@ -7,11 +7,6 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { supabase } from '../utils/supabase';
 import { useFocusEffect } from '@react-navigation/native';
 
-const initialProducts = [
-  { id: '1', name: 'Product 1', description: 'Description of Product 1', price: '$10', image: 'https://via.placeholder.com/150' },
-  // Add more products as needed
-];
-
 const ProductCard = ({ id, name, description, price, image, onDelete, navigation }) => (
   <View className="bg-white rounded-lg shadow-md py-3 px-4 mb-3 flex-row">
     <Image
@@ -32,7 +27,7 @@ const ProductCard = ({ id, name, description, price, image, onDelete, navigation
 );
 
 const MyProduct = ({ navigation }) => {
-  const [products, setProducts] = useState(initialProducts);
+  const [products, setProducts] = useState([]);
   const { isLoggedIn, session } = useContext(AuthContext); // Get isLoggedIn and session from AuthContext
   const [storeExists, setStoreExists] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -112,18 +107,28 @@ const MyProduct = ({ navigation }) => {
         <View className="items-center h-full mt-6">
           {isLoggedIn ? (
             storeExists ? (
-              products.map(product => (
-                <ProductCard
-                  key={product.id}
-                  id={product.id}
-                  name={product.name}
-                  description={product.description}
-                  price={product.price}
-                  image={product.image}
-                  onDelete={deleteProduct}
-                  navigation={navigation}
-                />
-              ))
+              products.length > 0 ? (
+                products.map(product => (
+                  <ProductCard
+                    key={product.id}
+                    id={product.id}
+                    name={product.name}
+                    description={product.description}
+                    price={product.price}
+                    image={product.image}
+                    onDelete={deleteProduct}
+                    navigation={navigation}
+                  />
+                ))
+              ) : (
+                <View className='px-[9px] items-center justify-center flex-1'>
+                  <View className='items-center'>
+                    <Text className='mb-[20px] text-[20px] text-center'>
+                      Belum ada produk, tambahkan produkmu sekarang!
+                    </Text>
+                  </View>
+                </View>
+              )
             ) : (
               <View className='px-[9px] items-center justify-center flex-1'>
                 <View className='items-center'>
