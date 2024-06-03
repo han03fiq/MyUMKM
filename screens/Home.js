@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { View, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'; // Importing icons from MaterialCommunityIcons
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SearchBar from '../components/SearchBar';
-import { supabase } from '../utils/supabase'; // Import Supabase connection
+import { supabase } from '../utils/supabase';
 
 const categories = [
   { id: 1, name: 'Fashion', icon: 'hanger' },
@@ -71,6 +71,11 @@ const Home = ({ navigation }) => {
     // navigation.navigate('CategoryPage', { category });
   };
 
+  const handleStorePress = (store) => {
+    console.log('Store pressed:', store);
+    navigation.navigate('StoreUnit', { store });
+  };
+
   const handleSeeMorePress = () => {
     navigation.navigate('Store');
   };
@@ -105,13 +110,30 @@ const Home = ({ navigation }) => {
               </TouchableOpacity>
             </View>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
-              {stores.map((store) => (
-                <TouchableOpacity onPress={() => navigation.navigate('StoreUnit')} key={store.id}>
+              {stores.slice(0, 4).map((store) => (
+                <TouchableOpacity onPress={() => handleStorePress(store)} key={store.id}>
                   <View style={{ marginVertical: 7, alignItems: 'center' }}>
-                    <Image
-                      source={{ uri: store.profile_store }} // Use profile_store from Supabase
-                      style={{ width: 80, height: 80, borderRadius: 40 }}
-                    />
+                    {store.profile_store ? (
+                      <Image
+                        source={{ uri: store.profile_store }}
+                        style={{ width: 80, height: 80, borderRadius: 40 }}
+                      />
+                    ) : (
+                      <View
+                        style={{
+                          width: 80,
+                          height: 80,
+                          borderRadius: 40,
+                          backgroundColor: '#fff',
+                          borderColor: '#d9d9d9',
+                          borderWidth: 1,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <Text>No Image</Text>
+                      </View>
+                    )}
                   </View>
                 </TouchableOpacity>
               ))}
@@ -122,11 +144,15 @@ const Home = ({ navigation }) => {
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <View style={{ flexDirection: 'row' }}>
                 {recommendedProducts.map((product) => (
-                  <TouchableOpacity key={product.id} style={{ margin: 5 }} onPress={() => navigation.navigate('ProductPage', { productId: product.id })}>
+                  <TouchableOpacity
+                    key={product.id}
+                    style={{ margin: 5 }}
+                    onPress={() => navigation.navigate('ProductPage', { productId: product.id })}
+                  >
                     <Image source={{ uri: product.image }} style={{ width: 100, height: 100, borderRadius: 10 }} />
-                    <Text numberOfLines={1} ellipsizeMode='tail' style={{ width: 100 }}>{product.name}</Text>
-                    <Text numberOfLines={1} ellipsizeMode='tail' style={{ width: 100 }}>Rp. {product.price}</Text>
-                    <Text numberOfLines={1} ellipsizeMode='tail' style={{ width: 100 }}>{product.location}</Text>
+                    <Text numberOfLines={1} ellipsizeMode="tail" style={{ width: 100 }}>{product.name}</Text>
+                    <Text numberOfLines={1} ellipsizeMode="tail" style={{ width: 100 }}>Rp. {product.price}</Text>
+                    <Text numberOfLines={1} ellipsizeMode="tail" style={{ width: 100 }}>{product.location}</Text>
                   </TouchableOpacity>
                 ))}
               </View>

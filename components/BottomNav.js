@@ -5,12 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import Home from '../screens/Home';
 import StackMyProductPageNavigator from './StackMyProductPage';
-import Store from '../screens/Store';
-import Favorite from '../screens/Favorite';
-import ProfileBeforeLogin from '../screens/ProfileBeforeLogin';
-import ProfileAfterLogin from '../screens/ProfileAfterLogin';
 import Login from '../screens/Login';
 import Register from '../screens/Register';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -18,6 +13,7 @@ import { AuthContext } from '../utils/AuthContext';
 import StackHomeNavigator from './StackHome';
 import StackStoreNavigator from './StackStore';
 import StackFavoriteNavigator from './StackFavorite';
+import StackProfileNavigator from './StackProfile';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -173,7 +169,7 @@ function BottomNav() {
                 />
                 <Tab.Screen
                     name="Profile"
-                    component={isLoggedIn ? ProfileAfterLogin : ProfileBeforeLogin}
+                    component={StackProfileNavigator}
                     options={{
                         tabBarLabel: 'Profile',
                         focusedIcon: 'account',

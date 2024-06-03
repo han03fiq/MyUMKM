@@ -1,44 +1,51 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons, Entypo, Feather } from '@expo/vector-icons';
+import { supabase } from '../utils/supabase';
 
-const products = [
-  { id: 1, name: 'Bagel & Cream Cheese', price: 'Rp 45.000' },
-  { id: 2, name: 'Smoked Beef & Egg', price: 'Rp 60.000' },
-  { id: 3, name: 'Smoked Brisket', price: 'Rp 88.000' },
-  { id: 4, name: 'Cheese Bagel', price: 'Rp 22.000' },
-  { id: 5, name: 'Nutella', price: 'Rp 50.000' },
-  { id: 6, name: 'Philly Cheese Steak', price: 'Rp 60.000' },
-  { id: 7, name: 'Smoked Brisket', price: 'Rp 88.000' },
-  { id: 8, name: 'Cheese Bagel', price: 'Rp 22.000' },
-  { id: 9, name: 'Nutella', price: 'Rp 50.000' },
-];
+const StoreUnit = ({ navigation, route }) => {
+  const { store } = route.params;
+  const [products, setProducts] = useState([]);
 
-const handleShare = async () => {
-  try {
-    const result = await Share.share({
-      message: 'Check out this awesome product: Kratos Aztec Tan Boots - Rp 990.000. Handcrafted in Bandung, West Java, Indonesia.',
-    });
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const { data: productsData, error } = await supabase
+          .from('Product')
+          .select('id_product, name_product, price, gambar_product')
+          .eq('id_store', store.id);
 
-    if (result.action === Share.sharedAction) {
-      if (result.activityType) {
-        // shared with activity type of result.activityType
-      } else {
-        // shared
+        if (error) {
+          throw error;
+        } else {
+          setProducts(productsData);
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error.message);
       }
-    } else if (result.action === Share.dismissedAction) {
-      // dismissed
-    }
-  } catch (error) {
-    alert(error.message);
-  }
-};
+    };
 
-const StorePage = ({navigation}) => {
+    fetchProducts();
+
+    console.log('Store ID:', store.id);
+  }, [store.id]);
+
+  const handleShare = async () => {
+    // implement share functionality
+  };
+
+  const handleGetDirections = () => {
+    if (store.directions_store) {
+      Linking.openURL(store.directions_store);
+    } else {
+      alert('Toko belum memasukkan lokasi detail');
+    }
+  };
+
   return (
-    <SafeAreaView className="flex-1" edges={['top', 'left', 'right']}>
-      <View className="flex-row justify-between items-center pb-5 px-4 shadow-md z-10">
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Entypo name="chevron-left" size={24} color="black" />
         </TouchableOpacity>
@@ -49,23 +56,23 @@ const StorePage = ({navigation}) => {
         </View>
       </View>
       <View style={styles.storeInfo}>
-        <View style={styles.logoPlaceholder} />
+        <Image source={{ uri: store.profile_store }} style={styles.logo} />
         <View>
-          <Text style={styles.storeName}>Mad Bagel</Text>
+          <Text style={styles.storeName}>{store.name_store}</Text>
           <View style={styles.locationContainer}>
             <MaterialCommunityIcons name="map-marker" size={16} color="gray" />
-            <Text style={styles.locationText}>Tamansari</Text>
+            <Text style={styles.locationText}>{store.location_store}</Text>
           </View>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={handleGetDirections}>
             <Text style={styles.directionsText}>Get Directions</Text>
           </TouchableOpacity>
         </View>
       </View>
       <ScrollView showsVerticalScrollIndicator='false' contentContainerStyle={styles.productGrid}>
         {products.map((product) => (
-          <View key={product.id} style={styles.productCard}>
-            <View style={styles.productImagePlaceholder} />
-            <Text style={styles.productName}>{product.name}</Text>
+          <View key={product.id_product} style={styles.productCard}>
+            <Image source={{ uri: product.gambar_product}} style={styles.productImagePlaceholder} />
+            <Text style={styles.productName}>{product.name_product}</Text>
             <Text style={styles.productPrice}>{product.price}</Text>
           </View>
         ))}
@@ -89,18 +96,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   headerIcon: {
-    marginLeft: 20, // Adjust the spacing between the icons
+    marginLeft: 20,
   },
   storeInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 9,
     marginBottom: 20,
   },
-  logoPlaceholder: {
+  logo: {
     width: 50,
     height: 50,
-    backgroundColor: '#ccc',
     borderRadius: 25,
     marginRight: 10,
   },
@@ -126,8 +131,8 @@ const styles = StyleSheet.create({
   productGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    paddingHorizontal: 15,
     justifyContent: 'space-between',
-    paddingHorizontal:9,
   },
   productCard: {
     width: '47%',
@@ -135,7 +140,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     marginBottom: 20,
-    alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ddd',
   },
@@ -149,13 +153,12 @@ const styles = StyleSheet.create({
   productName: {
     fontSize: 16,
     fontWeight: 'bold',
-    textAlign: 'center',
+    paddingBottom: 5,
   },
   productPrice: {
     fontSize: 14,
     color: 'gray',
-    textAlign: 'center',
   },
 });
 
-export default StorePage;
+export default StoreUnit;

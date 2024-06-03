@@ -1,10 +1,11 @@
-import React, { useState, useContext } from 'react'; // Import useContext
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/Ionicons'; // Make sure you've installed react-native-vector-icons
+import Icon from 'react-native-vector-icons/Ionicons';
 import { AuthContext } from '../utils/AuthContext';
 import { ScrollView } from 'react-native-gesture-handler';
-import TambahProduk from './TambahProduk';
+import { supabase } from '../utils/supabase';
+import { useFocusEffect } from '@react-navigation/native';
 
 const initialProducts = [
   { id: '1', name: 'Product 1', description: 'Description of Product 1', price: '$10', image: 'https://via.placeholder.com/150' },
@@ -32,7 +33,44 @@ const ProductCard = ({ id, name, description, price, image, onDelete, navigation
 
 const MyProduct = ({ navigation }) => {
   const [products, setProducts] = useState(initialProducts);
-  const { isLoggedIn } = useContext(AuthContext); // Get isLoggedIn from AuthContext
+  const { isLoggedIn, session } = useContext(AuthContext); // Get isLoggedIn and session from AuthContext
+  const [storeExists, setStoreExists] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const checkStore = async () => {
+    try {
+      if (isLoggedIn && session) {
+        const user = session.user;
+        console.log('User is logged in:', user);
+        console.log('Checking store for user:', user.id);
+        
+        const { data: storeData, error } = await supabase
+          .from('Store')
+          .select('id')
+          .eq('id_akun', user.id);
+        
+        if (error) {
+          console.error('Error checking store:', error.message);
+          throw error;
+        }
+
+        console.log('Store data:', storeData);
+        setStoreExists(storeData.length > 0);
+      } else {
+        console.log('User is not logged in or user data is not available');
+      }
+    } catch (error) {
+      console.error('Error checking store:', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      checkStore();
+    }, [isLoggedIn, session])
+  );
 
   const addProduct = () => {
     const newProduct = {
@@ -50,8 +88,20 @@ const MyProduct = ({ navigation }) => {
   };
 
   const handleLoginPress = () => {
-    navigation.navigate('Login'); // Navigate to Login page
+    navigation.navigate('Login');
   };
+
+  const handleCreateStorePress = () => {
+    navigation.navigate('TambahStore');
+  };
+
+  if (loading) {
+    return (
+      <SafeAreaView className="flex-1 justify-center items-center">
+        <Text>Loading...</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1 justify-center items-center px-[9px]">
@@ -61,27 +111,43 @@ const MyProduct = ({ navigation }) => {
         </View>
         <View className="items-center h-full mt-6">
           {isLoggedIn ? (
-            products.map(product => (
-              <ProductCard
-                key={product.id}
-                id={product.id}
-                name={product.name}
-                description={product.description}
-                price={product.price}
-                image={product.image}
-                onDelete={deleteProduct}
-                navigation={navigation}
-              />
-            ))
+            storeExists ? (
+              products.map(product => (
+                <ProductCard
+                  key={product.id}
+                  id={product.id}
+                  name={product.name}
+                  description={product.description}
+                  price={product.price}
+                  image={product.image}
+                  onDelete={deleteProduct}
+                  navigation={navigation}
+                />
+              ))
+            ) : (
+              <View className='px-[9px] items-center justify-center flex-1'>
+                <View className='items-center'>
+                  <Text className='mb-[20px] text-[20px] text-center'>
+                    Kamu belum memiliki store, tekan tombol di bawah untuk membuat store!
+                  </Text>
+                  <TouchableOpacity 
+                    className="bg-[#222] rounded-[15px] py-3 px-9 items-center"
+                    onPress={handleCreateStorePress} 
+                  >
+                    <Text className="text-white text-lg">Buat Toko</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )
           ) : (
             <View className='px-[9px] items-center justify-center flex-1'>
-              <View className='px-[9px] items-center'>
+              <View className='items-center'>
                 <Text className='mb-[20px] text-[20px] text-center'>
                   Kamu belum Login, tekan tombol di bawah untuk Login!
                 </Text>
                 <TouchableOpacity 
                   className="bg-[#222] rounded-[15px] py-3 px-9 items-center"
-                  onPress={handleLoginPress} // Use handleLoginPress function
+                  onPress={handleLoginPress} 
                 >
                   <Text className="text-white text-lg">Login</Text>
                 </TouchableOpacity>
@@ -90,7 +156,7 @@ const MyProduct = ({ navigation }) => {
           )}
         </View>
       </View>
-      {isLoggedIn && (
+      {isLoggedIn && storeExists && (
         <TouchableOpacity className="absolute bottom-5 right-5 bg-[#222] w-[60px] h-[60px] rounded-full justify-center items-center shadow-lg" onPress={() => {navigation.navigate('TambahProduk')}}>
           <Icon name="add" size={30} color="white" />
         </TouchableOpacity>
