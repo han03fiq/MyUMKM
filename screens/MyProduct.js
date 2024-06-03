@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
+import React, { useState, useEffect, useContext, useCallback, route } from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -7,30 +7,34 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { supabase } from '../utils/supabase';
 import { useFocusEffect } from '@react-navigation/native';
 
-const ProductCard = ({ id, name, description, price, image, onDelete, navigation }) => (
-  <View className="bg-white rounded-lg shadow-md py-3 px-4 mb-3 flex-row">
-    <Image
-      source={{ uri: image }}
-      className="w-[110px] h-[90px] rounded-lg mr-4"
-    />
-    <View className="flex-1">
-      <TouchableOpacity onPress={() => navigation.navigate('MyProductPage', { id, name, description, price, image })}>
-        <Text className="text-xl font-bold mb-2">{name}</Text>
-        <Text className="text-gray-600">{description}</Text>
-        <Text className="text-gray-800 font-bold mt-2">{price}</Text>
-      </TouchableOpacity>
-      <TouchableOpacity className="absolute top-0 right-0 mt-1" onPress={() => onDelete(id)}>
+const ProductCard = ({ id, name, description, price, image, onDelete, navigation }) => {
+  const displayImage = image || 'https://via.placeholder.com/150';
+  return (
+    <View className="bg-white rounded-lg shadow-md py-3 pl-4 pr-8 mb-3 flex-row">
+      <Image
+        source={{ uri: displayImage }}
+        className="w-[110px] h-[110px] rounded-lg mr-4"
+      />
+      <View className="flex-1">
+        <TouchableOpacity onPress={() => navigation.navigate('MyProductPage', { id, name, description, price, image })}>
+          <Text numberOfLines={2} ellipsizeMode="tail" style={{ width: 200 }} className="text-xl font-bold mb-2">{name}</Text>
+          <Text numberOfLines={1} ellipsizeMode="tail" style={{ width: 200 }} className="text-gray-600">{description}</Text>
+          <Text numberOfLines={1} ellipsizeMode="tail" style={{ width: 200 }} className="text-gray-800 font-bold mt-2">Rp. {price}</Text>
+        </TouchableOpacity>
+      </View>
+      <TouchableOpacity className="absolute top-0 right-0 mt-3 mr-3" onPress={() => onDelete(id)}>
         <Icon name="trash" size={18} color='rgba(255, 0, 0, 0.5)' />
       </TouchableOpacity>
     </View>
-  </View>
-);
+  )
+};
 
-const MyProduct = ({ navigation }) => {
+const MyProduct = ({ navigation, route }) => {
   const [products, setProducts] = useState([]);
   const { isLoggedIn, session } = useContext(AuthContext); // Get isLoggedIn and session from AuthContext
   const [storeExists, setStoreExists] = useState(false);
   const [loading, setLoading] = useState(true);
+  const newProduct = route.params?.newProduct;
 
   const checkStore = async () => {
     try {
@@ -67,14 +71,14 @@ const MyProduct = ({ navigation }) => {
     }, [isLoggedIn, session])
   );
 
+  useEffect(() => {
+    if (newProduct) {
+      setProducts(prevProducts => [...prevProducts, newProduct]);
+    }
+  }, [newProduct]);
+
   const addProduct = () => {
-    const newProduct = {
-      id: (products.length + 1).toString(),
-      name: `Product ${products.length + 1}`,
-      description: `Description of Product ${products.length + 1}`,
-      price: `$${10 * (products.length + 1)}`,
-      image: 'https://via.placeholder.com/150',
-    };
+    const newProduct = route.params?.newProduct;
     setProducts([...products, newProduct]);
   };
 

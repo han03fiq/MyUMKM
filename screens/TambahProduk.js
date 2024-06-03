@@ -79,7 +79,7 @@ const TambahProduk = () => {
       setPrice('');
       setCategory('');
       setImage('');
-      navigation.navigate('MyProduct'); // Navigate to MyProduct page after save
+      navigation.navigate('MyProduct', { newProduct: { name: productName, description: description, price: price, image: image } }); // Navigate to MyProduct page after save
     } catch (error) {
       console.error('Error saving product:', error.message);
       Alert.alert('Error', 'Failed to save product.');
