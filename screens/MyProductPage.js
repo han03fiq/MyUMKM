@@ -1,41 +1,41 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Linking, Share, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, Linking, Share, Alert, Image } from 'react-native';
 import { MaterialCommunityIcons, Entypo, Feather } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { supabase } from '../utils/supabase';
 
-const images = [
-  { id: 1 },
-  { id: 2 }
-];
-
-const MyProductPage = ({ navigation }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+const MyProductPage = ({ navigation, route }) => {
+  const [product, setProduct] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
 
-  const handleGetDirections = () => {
-    const url = 'https://maps.app.goo.gl/S13NzbCkjDMRE77Q9';
-    Linking.openURL(url);
-  };
+  const productId = route.params?.id;
 
-  const goToNextImage = () => {
-    const nextIndex = (currentIndex + 1) % images.length;
-    setCurrentIndex(nextIndex);
-  };
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('Product')
+          .select('name_product, price, description, gambar_product')
+          .eq('id_product', productId)
+          .single();
 
-  const goToPreviousImage = () => {
-    const previousIndex = (currentIndex - 1 + images.length) % images.length;
-    setCurrentIndex(previousIndex);
-  };
+        if (error) throw error;
+        setProduct(data);
+      } catch (error) {
+        console.error('Error fetching product:', error.message);
+      }
+    };
 
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-  };
+    if (productId) {
+      fetchProduct();
+    }
+  }, [productId]);
 
   const handleShare = async () => {
     try {
       const result = await Share.share({
-        message: 'Check out this awesome product: Kratos Aztec Tan Boots - Rp 990.000. Handcrafted in Bandung, West Java, Indonesia.',
+        message: `Check out this awesome product: ${product.name_product} - Rp ${product.price}. Handcrafted in Bandung, West Java, Indonesia.`,
       });
 
       if (result.action === Share.sharedAction) {
@@ -56,9 +56,33 @@ const MyProductPage = ({ navigation }) => {
     setIsBookmarked(!isBookmarked);
   };
 
-  const handleHighlightProduct = () => {
-    Alert.alert('Product Highlighted', 'This product has been highlighted successfully!');
+  const handleHighlightProduct = async () => {
+    try {
+      console.log(`Highlighting product with ID: ${productId}`);
+      const { data, error } = await supabase
+        .from('Product')
+        .update({ status: 1 })
+        .eq('id_product', productId);
+
+      if (error) {
+        throw error;
+      }
+
+      console.log('Update result:', data);
+      Alert.alert('Product Highlighted', 'Produk ini berhasil di Highlight');
+    } catch (error) {
+      console.error('Error highlighting product:', error.message);
+      Alert.alert('Error', 'Failed to highlight product. Please try again later.');
+    }
   };
+
+  if (!product) {
+    return (
+      <SafeAreaView className="flex-1 justify-center items-center">
+        <Text>Loading...</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1">
@@ -81,32 +105,22 @@ const MyProductPage = ({ navigation }) => {
       </View>
       <ScrollView className="flex-1">
         <View className="items-center justify-center relative">
-          <View className="w-full h-72 bg-gray-300" />
-        </View>
-        <View className="flex-row items-center justify-center mt-2">
-          <TouchableOpacity className="px-2" onPress={goToPreviousImage}>
-            <Entypo name="chevron-left" size={24} color="black" />
-          </TouchableOpacity>
-          <View className="flex-row items-center">
-            {images.map((_, index) => (
-              <TouchableOpacity
-                key={index}
-                className={`w-2.5 h-2.5 rounded-full mx-1 ${currentIndex === index ? 'bg-black' : 'bg-gray-500'}`}
-                onPress={() => setCurrentIndex(index)}
-              />
-            ))}
-          </View>
-          <TouchableOpacity className="px-2" onPress={goToNextImage}>
-            <Entypo name="chevron-right" size={24} color="black" />
-          </TouchableOpacity>
+          {product.gambar_product ? (
+            <Image source={{ uri: product.gambar_product }} className="w-full h-72 bg-gray-300" />
+          ) : (
+            <View className="w-full h-72 bg-gray-300 justify-center items-center">
+              <Feather name="image" size={50} color="black" />
+              <Text>No Image</Text>
+            </View>
+          )}
         </View>
         <View className="mt-2 p-5 rounded-lg">
-          <Text className="text-xl font-bold">Product Name</Text>
-          <Text className="text-lg font-semibold mt-2">Product Price</Text>
+          <Text className="text-xl font-bold">{product.name_product}</Text>
+          <Text className="text-lg font-semibold mt-2">Rp {product.price}</Text>
           <Text className="text-base mt-2">
-            {isExpanded ? `Long Description` : `Short Description`}
+            {isExpanded ? product.description : `${product.description.slice(0, 100)}...`}
           </Text>
-          <TouchableOpacity onPress={toggleExpand}>
+          <TouchableOpacity onPress={() => setIsExpanded(!isExpanded)}>
             <Text className={`text-base text-blue-500 mt-1 underline ${isExpanded ? 'mt-5' : ''}`}>
               {isExpanded ? 'Read Less' : 'Read More...'}
             </Text>

@@ -57,7 +57,7 @@ const TambahProduk = () => {
         throw new Error('Store not found for the current user');
       }
 
-      const { data, error } = await supabase.from('Product').insert([
+      const { data: productData, error: productError } = await supabase.from('Product').insert([
         {
           name_product: productName,
           description: description,
@@ -66,11 +66,25 @@ const TambahProduk = () => {
           id_kategori: categoryID, // Set id_kategori based on the category input
           gambar_product: image || null, // Simpan URL gambar dalam database atau null jika kosong
         },
-      ]);
+      ]).select(); // Ensure to select the inserted data
 
-      if (error) {
-        throw error;
+      if (productError) {
+        throw productError;
       }
+
+      if (!productData || productData.length === 0) {
+        throw new Error('Failed to retrieve inserted product data');
+      }
+
+      // Ambil id_product dari produk yang baru ditambahkan
+      const idProduct = productData[0]?.id_product;
+
+      if (!idProduct) {
+        throw new Error('Failed to retrieve id_product from inserted data');
+      }
+
+      // Panggil fungsi untuk menyimpan data ke tabel MyProduct
+      await saveToMyProduct(idProduct, idStore);
 
       Alert.alert('Success', 'Product added successfully!');
       // Reset input fields after successful save
@@ -79,10 +93,30 @@ const TambahProduk = () => {
       setPrice('');
       setCategory('');
       setImage('');
-      navigation.navigate('MyProduct', { newProduct: { name: productName, description: description, price: price, image: image } }); // Navigate to MyProduct page after save
+      navigation.navigate('MyProduct', { newProduct: { id: idProduct, name: productName, description: description, price: price, image: image } }); // Navigate to MyProduct page after save
     } catch (error) {
       console.error('Error saving product:', error.message);
-      Alert.alert('Error', 'Failed to save product.');
+      Alert.alert('Error', `Failed to save product: ${error.message}`);
+    }
+  };
+
+  const saveToMyProduct = async (idProduct, idStore) => {
+    try {
+      const { data, error } = await supabase.from('MyProduct').insert([
+        {
+          id_produk: idProduct, // FK dari id_product di tabel Product
+          id_store: idStore,    // FK dari id di tabel Store
+        },
+      ]);
+
+      if (error) {
+        throw error;
+      }
+
+      console.log('MyProduct entry added successfully:', data);
+    } catch (error) {
+      console.error('Error saving to MyProduct:', error.message);
+      Alert.alert('Error', 'Failed to save to MyProduct.');
     }
   };
 

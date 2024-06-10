@@ -1,130 +1,103 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { supabase } from '../utils/supabase';
+import { Ionicons } from '@expo/vector-icons';
 
 const Store = ({ navigation }) => {
-  const stores = [
-    { id: 1, name: 'Mad Bagel', image: 'https://via.placeholder.com/100', location: 'Tamansari' },
-    { id: 2, name: 'Mad Bagel', image: 'https://via.placeholder.com/100', location: 'Tamansari' },
-    { id: 3, name: 'Mad Bagel', image: 'https://via.placeholder.com/100', location: 'Tamansari' },
-    { id: 4, name: 'Mad Bagel', image: 'https://via.placeholder.com/100', location: 'Tamansari' },
-    { id: 5, name: 'Mad Bagel', image: 'https://via.placeholder.com/100', location: 'Tamansari' },
-    { id: 6, name: 'Mad Bagel', image: 'https://via.placeholder.com/100', location: 'Tamansari' },
-  ];
+  const [storesByCategory, setStoresByCategory] = useState({});
+
+  useEffect(() => {
+    const fetchStoresByCategory = async () => {
+      try {
+        const { data: storesData, error: storesError } = await supabase.from('Store').select('*');
+        if (storesError) throw storesError;
+
+        // Group stores by category
+        const groupedStores = {};
+        storesData.forEach(store => {
+          if (!groupedStores[store.id_kategori]) {
+            groupedStores[store.id_kategori] = [];
+          }
+          groupedStores[store.id_kategori].push(store);
+        });
+
+        setStoresByCategory(groupedStores);
+      } catch (error) {
+        console.error('Error fetching stores by category:', error.message);
+      }
+    };
+
+    fetchStoresByCategory();
+  }, []);
+
+  const handleStorePress = (store) => {
+    console.log('Store pressed:', store);
+    navigation.navigate('StoreUnit', { store });
+  };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right', 'bottom']}>
       <View style={styles.innerContainer}>
         <View>
           <Text style={styles.title}>Store</Text>
         </View>
-      <ScrollView showsVerticalScrollIndicator='false' className='mt-6'>
-        <View>
-          <View style={styles.header}>
-            <Text style={[styles.subtitle, {textAlign: 'left'}]}>Fashion</Text>
-            <View style={styles.line} />
-          </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator='false'>
-            <View style={{ flexDirection: 'row' }}>
-              {stores.map((store) => (
-                <TouchableOpacity key={store.id} style={styles.storeContainer} onPress={() => navigation.navigate('StoreUnit')}>
-                  <Image source={{ uri: store.image }} style={styles.image} />
-                  <Text style={styles.storeName}>{store.name}</Text>
-                  <Text style={styles.storeLocation}>{store.location}</Text>
-                </TouchableOpacity>
-              ))}
+        <ScrollView showsVerticalScrollIndicator={false} style={{ marginTop: 6 }}>
+          {Object.entries(storesByCategory).map(([categoryId, categoryStores]) => (
+            <View key={categoryId}>
+              <View style={styles.header}>
+                <Text style={[styles.subtitle, { textAlign: 'left' }]}>
+                  {getCategoryName(categoryId)}
+                </Text>
+                <View style={styles.line} />
+              </View>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <View style={{ flexDirection: 'row' }}>
+                  {categoryStores.map((store) => (
+                    <TouchableOpacity 
+                      key={store.id} 
+                      style={styles.storeContainer} 
+                      onPress={() => handleStorePress(store)}
+                    >
+                      {store.profile_store ? (
+                        <Image source={{ uri: store.profile_store }} style={styles.image} />
+                      ) : (
+                        <View style={styles.noImageContainer}>
+                          <Ionicons name="image-outline" size={24} color="black" />
+                          <Text style={styles.noImageText}>No Image</Text>
+                        </View>
+                      )}
+                      <Text numberOfLines={1} ellipsizeMode="tail" style={styles.storeName}>{store.name_store}</Text>
+                      <Text style={styles.storeLocation}>{store.location_store}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </ScrollView>
             </View>
-          </ScrollView>
-        </View>
-        <View className='my-[10px]'>
-          <View style={styles.header}>
-            <Text style={[styles.subtitle, {textAlign: 'left'}]}>Home and Kitchen</Text>
-            <View style={styles.line} />
-          </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator='false'>
-            <View style={{ flexDirection: 'row' }}>
-              {stores.map((store) => (
-                <TouchableOpacity key={store.id} style={styles.storeContainer} onPress={() => navigation.navigate('StoreUnit')}>
-                  <Image source={{ uri: store.image }} style={styles.image} />
-                  <Text style={styles.storeName}>{store.name}</Text>
-                  <Text style={styles.storeLocation}>{store.location}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </ScrollView>
-        </View>
-        <View>
-          <View style={styles.header}>
-            <Text style={[styles.subtitle, {textAlign: 'left'}]}>Handicraft</Text>
-            <View style={styles.line} />
-          </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator='false'>
-            <View style={{ flexDirection: 'row' }}>
-              {stores.map((store) => (
-                <TouchableOpacity key={store.id} style={styles.storeContainer} onPress={() => navigation.navigate('StoreUnit')}>
-                  <Image source={{ uri: store.image }} style={styles.image} />
-                  <Text style={styles.storeName}>{store.name}</Text>
-                  <Text style={styles.storeLocation}>{store.location}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </ScrollView>
-        </View>
-        <View className='my-[10px]'>
-          <View style={styles.header}>
-            <Text style={[styles.subtitle, {textAlign: 'left'}]}>Gadget</Text>
-            <View style={styles.line} />
-          </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator='false'>
-            <View style={{ flexDirection: 'row' }}>
-              {stores.map((store) => (
-                <TouchableOpacity key={store.id} style={styles.storeContainer} onPress={() => navigation.navigate('StoreUnit')}>
-                  <Image source={{ uri: store.image }} style={styles.image} />
-                  <Text style={styles.storeName}>{store.name}</Text>
-                  <Text style={styles.storeLocation}>{store.location}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </ScrollView>
-        </View>
-        <View>
-          <View style={styles.header}>
-            <Text style={[styles.subtitle, {textAlign: 'left'}]}>Food & Beverages</Text>
-            <View style={styles.line} />
-          </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator='false'>
-            <View style={{ flexDirection: 'row' }}>
-              {stores.map((store) => (
-                <TouchableOpacity key={store.id} style={styles.storeContainer} onPress={() => navigation.navigate('StoreUnit')}>
-                  <Image source={{ uri: store.image }} style={styles.image} />
-                  <Text style={styles.storeName}>{store.name}</Text>
-                  <Text style={styles.storeLocation}>{store.location}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </ScrollView>
-        </View>
-        <View className='my-[10px]'>
-          <View style={styles.header}>
-            <Text style={[styles.subtitle, {textAlign: 'left'}]}>Beauty</Text>
-            <View style={styles.line} />
-          </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator='false'>
-            <View style={{ flexDirection: 'row' }}>
-              {stores.map((store) => (
-                <TouchableOpacity key={store.id} style={styles.storeContainer} onPress={() => navigation.navigate('StoreUnit')}>
-                  <Image source={{ uri: store.image }} style={styles.image} />
-                  <Text style={styles.storeName}>{store.name}</Text>
-                  <Text style={styles.storeLocation}>{store.location}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </ScrollView>
-        </View>
-      </ScrollView>
-      </View>      
+          ))}
+        </ScrollView>
+      </View>
     </SafeAreaView>
   );
+};
+
+const getCategoryName = (categoryId) => {
+  switch (categoryId) {
+    case '1':
+      return 'Fashion';
+    case '2':
+      return 'Home and Kitchen';
+    case '3':
+      return 'Handicraft';
+    case '4':
+      return 'Gadget';
+    case '5':
+      return 'Food & Beverages';
+    case '6':
+      return 'Beauty';
+    default:
+      return '';
+  }
 };
 
 const styles = StyleSheet.create({
@@ -156,6 +129,8 @@ const styles = StyleSheet.create({
   storeContainer: {
     margin: 5,
     alignItems: 'center',
+    width: 100,
+    height: 150,
   },
   image: {
     width: 100,
@@ -169,6 +144,19 @@ const styles = StyleSheet.create({
   storeLocation: {
     textAlign: 'center',
     color: 'gray',
+  },
+  noImageContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+    backgroundColor: '#d9d9d9',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noImageText: {
+    marginTop: 5,
+    fontSize: 12,
+    color: 'black',
   },
 });
 

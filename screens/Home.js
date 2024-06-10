@@ -39,6 +39,7 @@ const Home = ({ navigation }) => {
             name_product, 
             price, 
             gambar_product,
+            status,
             Store (id, location_store)
           `);
         if (productsError) throw productsError;
@@ -49,6 +50,7 @@ const Home = ({ navigation }) => {
           image: product.gambar_product,
           price: product.price,
           location: product.Store.location_store,
+          status: product.status,
         }));
 
         setRecommendedProducts(formattedProducts);
@@ -149,10 +151,33 @@ const Home = ({ navigation }) => {
                     style={{ margin: 5 }}
                     onPress={() => navigation.navigate('ProductPage', { productId: product.id })}
                   >
-                    <Image source={{ uri: product.image }} style={{ width: 100, height: 100, borderRadius: 10 }} />
+                    {product.image ? (
+                      <Image source={{ uri: product.image }} style={{ width: 100, height: 100, borderRadius: 10 }} />
+                    ) : (
+                      <View
+                        style={{
+                          width: 100,
+                          height: 100,
+                          borderRadius: 10,
+                          backgroundColor: '#fff',
+                          borderColor: '#d9d9d9',
+                          borderWidth: 1,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <Icon name="image-outline" size={50} color="#222" />
+                        <Text>No Image</Text>
+                      </View>
+                    )}
                     <Text numberOfLines={1} ellipsizeMode="tail" style={{ width: 100 }}>{product.name}</Text>
                     <Text numberOfLines={1} ellipsizeMode="tail" style={{ width: 100 }}>Rp. {product.price}</Text>
                     <Text numberOfLines={1} ellipsizeMode="tail" style={{ width: 100 }}>{product.location}</Text>
+                    {product.status === '1' && (
+                      <View style={{ position: 'absolute', bottom: 0, right: 0, marginBottom: 1 }}>
+                        <Icon name="flash" size={18} />
+                      </View>
+                    )}
                   </TouchableOpacity>
                 ))}
               </View>
