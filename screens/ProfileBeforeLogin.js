@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
-import Login from './Login';
 
 const ProfileBeforeLogin = () => {
   const navigation = useNavigation(); // Initialize navigation
@@ -12,20 +11,20 @@ const ProfileBeforeLogin = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.headerText}>Profile</Text>
+    <SafeAreaView className="flex justify-center items-center px-[9px]" edges={['top', 'left', 'right']}>
+      <View className="h-full w-full">
+        <View>
+            <Text className="text-[30px] font-bold text-center">Profile</Text>
         </View>
-        <View style={styles.content}>
+        <View className='px-[9px] items-center justify-center flex-1'>
           <Text style={styles.contentText}>
             Kamu belum Login, tekan tombol di bawah untuk Login!
           </Text>
           <TouchableOpacity 
-            style={styles.loginButton} 
+            className="bg-[#222] rounded-[15px] py-3 px-9 items-center"
             onPress={handleLoginPress} // Use handleLoginPress function
           >
-            <Text style={styles.loginButtonText}>Login</Text>
+            <Text className="text-white text-lg">Login</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -34,45 +33,10 @@ const ProfileBeforeLogin = () => {
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    marginVertical: 8,
-    marginHorizontal: 14,
-  },
-  header: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 10,
-  },
-  headerText: {
-    fontSize: 30,
-    fontWeight: 'bold',
-  },
-  content: {
-    flex: 1,
-    marginTop: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: 10,
-  },
   contentText: {
     fontSize: 20,
     textAlign: 'center',
     marginBottom: 20,
-  },
-  loginButton: {
-    backgroundColor: '#d9d9d9',
-    borderRadius: 15,
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-  },
-  loginButtonText: {
-    fontSize: 16,
-    color: '#000',
-    textAlign: 'center',
   },
 });
 

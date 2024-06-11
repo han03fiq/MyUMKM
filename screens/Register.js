@@ -1,91 +1,76 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import throttle from 'lodash.throttle';
+import { signUpWithEmail } from '../utils/api';
+
+const isEmailValid = (email) => {
+  const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return regex.test(email);
+};
 
 const Register = ({ navigation }) => {
-  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
 
-  const handleRegister = () => {
-    console.log('Register button pressed');
-    // Implement registration logic here
-  };
+  const handleRegister = throttle(async () => {
+    try {
+      await signUpWithEmail(username, email, password);
+      Alert.alert('Success', 'User registered successfully');
+      navigation.navigate('Login');
+    } catch (error) {
+      if (error.message.includes('rate limit')) {
+        Alert.alert('Error', 'Too many requests. Please try again later.');
+      } else {
+        Alert.alert('Error', error.message);
+      }
+    }
+  }, 30000); // 30 seconds throttle
+
+  const isButtonDisabled = !username || !isEmailValid(email) || password.length < 6;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <View style={styles.header}>
-            <Text style={styles.headerText}>Register</Text>
+    <SafeAreaView className="flex justify-center items-center px-[9px]">
+      <View className="h-full w-full">
+        <View>
+          <Text className="text-[30px] font-bold text-center">Register</Text>
         </View>
-        <TextInput
-          style={styles.input}
-          placeholder="Username"
-          value={username}
-          onChangeText={setUsername}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
-        <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-          <Text style={styles.registerButtonText}>Register</Text>
-        </TouchableOpacity>
+        <View className='items-center justify-center flex-1'>
+          <TextInput
+            className="w-full border border-[#606060] bg-white rounded-[15px] px-4 py-5 mb-4"
+            placeholder="Masukkan username"
+            value={username}
+            onChangeText={setUsername}
+            autoCapitalize="none"
+          />
+          <TextInput
+            className="w-full border border-[#606060] bg-white rounded-[15px] px-4 py-5 mb-4"
+            placeholder="Masukkan email"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+          <TextInput
+            className="w-full border border-[#606060] bg-white rounded-[15px] px-4 py-5 mb-4"
+            placeholder="Masukkan password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+          />
+          <TouchableOpacity 
+            className="bg-[#222] rounded-[15px] py-3 px-9 items-center"
+            onPress={handleRegister}
+            disabled={isButtonDisabled}
+            style={{ opacity: isButtonDisabled ? 0.4 : 1 }}
+          >
+            <Text className="text-white text-lg">Register</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  container: {
-    width: '90%', // Adjust to your needs
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  header: {
-    marginBottom: 20,
-  },
-  headerText: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  input: {
-    width: '100%',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 10,
-    padding: 10,
-    marginBottom: 15,
-    backgroundColor: '#fff',
-  },
-  registerButton: {
-    backgroundColor: '#d9d9d9',
-    borderRadius: 15,
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    alignItems: 'center',
-  },
-  registerButtonText: {
-    fontSize: 16,
-    color: '#000',
-  },
-});
 
 export default Register;
